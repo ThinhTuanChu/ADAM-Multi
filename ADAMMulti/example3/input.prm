@@ -25,7 +25,7 @@
 &LD
  qtlDistribution='normal'
  UseStoredHaplotypes=yes
- UseStoredHaplotypesDirectory='~/ADAMMulti/example3/geno1pop/'
+ UseStoredHaplotypesDirectory='~/ADAMMulti/example1/geno1pop/' ! use founders from example 1
  npopbaseHaplotype=1
 /
 
