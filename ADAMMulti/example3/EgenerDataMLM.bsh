@@ -1,0 +1,10 @@
+ ulimit -s unlimited
+ echo Generate Phenotype using MLM
+ echo
+ 
+# script to be run
+
+# example 
+
+R CMD BATCH --vanilla EgenerateDataMLM.R Egenerate.log
+cp -f Egenerate.log $SLURM_SUBMIT_DIR

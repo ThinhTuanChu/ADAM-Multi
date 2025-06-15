@@ -1,0 +1,158 @@
+!&OUTPUTDIRECTORY  ! if not provided. Submission folder will be used.
+! OutDirectory='~/ADAMMulti/example3/'
+!/
+ 
+&CONTROLPARAMETERS
+ GeneticModel=genomic
+ nrep=1
+ ntime=21
+ start_rep=1 
+ SimulateDominance=0          ! 1
+ SimulatePairEpistasis=0 0 0  ! 1 1 1 
+ !qtlEffectsProvided=11       ! if these effects are provided. Comment-out if not.
+ nTotal=269999          ! a rough estimate of max total number of indivdiuals in pops. (unnecessary but for memory efficient purposes)
+/
+ 
+&CONTROL_GENOME
+ nchrom=7
+ ChromLengths=220 230 180 240 200 210 200
+ nAlleleInLocus=3
+ ploidy=2
+ nEpisPairLoci=4000
+ templateDensity=2.0
+/
+
+&LD
+ qtlDistribution='normal'
+ UseStoredHaplotypes=yes
+ UseStoredHaplotypesDirectory='~/ADAMMulti/example3/geno1pop/'
+ npopbaseHaplotype=1
+/
+
+&RANDOMNUMBERSEEDS
+ randomSeeds=manual
+ founderSeeds=user
+ founderSeed1= 623119
+ founderSeed2= 656479
+ baseSeeds=computer
+ selectionSeeds=computer    /
+
+&POPULATIONPARAMETERS
+ npop=1
+ nherd=1
+ ntbv=1
+ nres=2
+ nobs=2
+ nebv=1
+ OldAgeMales=2
+ OldAgeFemales=2
+/
+ 
+&BASEPOPULATION
+ age_class_base=input   ! create_structure   ! 
+ max_age_base_males=1
+ max_age_base_females=1
+ age_class_male= 20
+ age_class_female= 200
+ RealiseBaseObservations=no   /
+ 
+&SELECTION
+ selection_groups=7
+ selection_scheme=
+!t1 t2 se li p1p2 a1a2 h1he2 ide1ide2 pari1pari2 selecMet selecCrit   Mende rBlup no relSt tagN tag dest mgro tp th desU rep_c lsA  ls sA       sr ger srul famrul
+1  21   0  1 1 1   1 1  1  1  -9  -9  -9  -9  'select_all' ''            0.5   0    0  0     0   0    3    0   0   0  0    0    ""   0  ''      0.0 0   0    0   ! 1  Genotyping
+1  21   0  1 1 1   1 1  1  1  -9  -9  -9  -9  'select_all' ''            0.5   0    0  0     0   0    8    0   0   0  0    0    ""   0  ''      0.0 0   0    0   ! 2  Phenotyping/ Realize observation
+1  21   0  1 1 1   1 1  1  1  -9  -9  -9  -9  'truncation' 'genomicblup' 0.5   2    1  0     0   0    0    0   0   0  1    0    ""   0  ''      0.0 0   0    0   ! 3  ML model to generate phenotype file.
+1  21   2  1 1 1   1 1  1  1  -9  -9  -9  -9  'truncation' 'random'      0.5   0    1  0     0   0    8    0   0   0  1    0    ""   0  ''      0.0 0   0    0   ! 4  Dummy step to force running GBLUP step again
+1   3   0  1 1 1   1 1  1  1  -9  -9  -9  -9  'truncation' 'genomicblup' 0.5   1    1  0     0   0    0    0   0   0  1    0    ""   0  ''      0.0 0   0    0   ! 5  Estimate variance components for GBLUP
+1  20   1  1 1 1   1 1  1  1  -9  -9  -9  -9  'truncation' 'genomicblup' 0.5   1   20  0     0   0    1    1   0   0  0   10 "fix"   0  ''      0.5 0   1    0   ! 6  GBLUP Selection of sires. Then allow mating 1 males x 10 females
+1  20   2  1 1 1   1 1  1  1  -9  -9  -9  -9  'truncation' 'genomicblup' 0.5   0  200  0     0   0    1    1   0   0  0    1 "fix"  10 'sample' 0.5 0   2    0   ! 7  Selection of dams. Then allow mating 1 female produces 10 offspring 
+/
+
+&RULES
+ SelectionRules=
+ 1 1 -9 1 -9 -9 -9 -9 -9 -9 -9 1 
+ 2 2 -9 2 -9 -9 -9 -9 -9 -9 -9 1 
+ SireTimeTotals = 2 25
+ FamilyTimeTotals= 1 3   /
+
+&GENOMICBLUPPARAMETERS
+ parameters=
+  5 'yes' 'sqrt2pq' 'one' 1 12 'markers' 'no' 0.0 0.01 0.0 'no' 'yes' 'all' -9 -9 5 1 'gmat'  ! remember to chang from 1 12 to 1 18 as nChrom changed
+  6 'yes' 'sqrt2pq' 'one' 1 12 'markers' 'no' 0.0 0.01 0.0 'no' 'yes' 'all' -9 -9 5 1 'gmat'  ! remember to chang from 1 12 to 1 18 as nChrom changed. Check other folders as well
+ centre=
+  5 'all' 1 1 1 1 -9 -9 0.05 'above' 
+  6 'all' 1 1 1 1 -9 -9 0.05 'above' 
+ scale=
+  5 'all' 1 1 1 1 -9 -9 0.05 'above' 
+  6 'all' 1 1 1 1 -9 -9 0.05 'above' 
+/
+  
+&BLUPPARAMETERS
+           ! stage  nfiles lstFileNeeded cmdrun logfile solfile dataHeader genoData loci GenoDataFormat GenoDataDelimiter GenoDataNSKIP
+ manualblupparm=3 2 'EgenerateDataMLM.R EgenerDataMLM.bsh' 'bash EgenerDataMLM.bsh' 'Egenerate.log' 'SOLkeeprecord.txt' 1 1 'qtl' 2 1 0  ! specify external running. And specify output format for the genotype file.
+           ! provide files: (1) dmudat (with header( without possible))
+		   !                (2) marker.RawData (QTL genotype data: ID and genotype code, format can be changed.)
+		   ! should remove old files. Free to change EgenerateDataMLM.R, but remember to change EgenerDataMLM.bsh accordingly
+		   ! Output files needed: (1) dmudatMLM.txt (without headers data file for GBLUP which has new phenotypes) 
+		   ! 				      (2) SOLkeeprecord.txt (no header, col1: 1, Col2: ID, Col3: new phenotype )
+		   !				      (3) Egenerate.log (report log file if the run is ok)
+ dmublupparm= 5 'dmuai' 1 '' 'parout.txt' 2 'EBlupOneDMUai.bsh EBlupOneDMUai.DIR' 'EBlupOneDMUai.bsh' 'all' -9 -9 -9 -9 -9 -9
+              6 'dmu5'  1 '' ''           2 'EBlupOneDMU5.bsh EBlupOneDMU5.DIR' 'EBlupOneDMU5.bsh' 'all' -9 -9 -9 -9 -9 -9
+ ebv_observation=   1 0
+ printDmuLstFiles='yes'
+/
+
+&MATINGPARAMETERS
+ mating_scheme= 1 'random_mating' 	  -2 -2 0 'defaults' 'all'    0 0 1 0 0
+/
+ 
+ &MATRICES
+  polygenicMatrix=
+    0.000001
+  genomicMatrix=
+    1.0	 
+  !dominanceMatrix=     0.2
+  !EpistasisAxAMatrix=  0.2
+  !EpistasisAxDMatrix=  0.2
+  !EpistasisDxDMatrix=  0.2
+  
+!  familyMatrix=        0.25 0.0
+!                       0.0 0.25
+  
+  residualMatrix=
+    2.5	 0.0
+	0.0  2.5
+/
+
+&DESIGN_MATRICES
+ ZDirectGenetic=
+  1 
+  1
+ WDirectError=
+  1 0
+  0 1
+/
+
+&ECONOMICVALUES
+ economicValueTbV=  1.0
+/
+
+&OBSERVATIONS
+ nMaleObs=1
+ nFemaleObs=2
+ MaleObservations=
+  1 2  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+ FemaleObservations=
+  1 2  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+  2 4  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9   ! dummy trait
+/
+ 
+&REPORT
+ nReportGroups=1
+ reportGroupPopHerd=1 1 1 1 -9 -9
+ printSimulatedData=1 0 0
+ printGenotypeTimes=20
+ debugOutput='yes'
+ printBreedingValues='yes'
+/

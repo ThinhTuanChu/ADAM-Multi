@@ -1,0 +1,25 @@
+$COMMENT ADAM-DMU interface
+$ANALYSE 12 2 0 0
+$DATA ASCII (10,3,-9998.0) dmudatMLM.txt
+$VARIABLE
+#1  2   3    4   5    6   7   8     9    10   11   12   13   14    15    16    17   18    19    20
+id lit sire dam fam mean sex group hys1 time1
+# 1     2     3    4    5      6    7   8   9   10  11 12  13  14  15  16  17
+ t1    wt1   pb1 
+
+
+$MODEL
+1
+0
+1 0 3 6 9  1
+1 1
+0
+0
+
+$VAR_STR 1 PGMIX 1 ASCII dmuped genotyped.dat gMatrix.prediction 0.05 G-ADJUST
+
+$PRIOR parout.txt
+
+$DMU5
+1500 1.0d-8
+10000

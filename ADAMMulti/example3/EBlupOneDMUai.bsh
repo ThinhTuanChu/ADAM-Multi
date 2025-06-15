@@ -1,0 +1,59 @@
+ JOBNAME=dmuAdam
+ TMPDIR=/scratch/$USER/$SLURM_JOBID                                             
+                                                                                
+ export JOBNAME TMPDIR
+ 
+ echo Jobname: $JOBNAME
+ echo
+ echo Working directory: $TMPDIR
+ echo
+ 
+ cd $TMPDIR
+ 
+ ulimit -s unlimited
+
+
+# names of R scripts to be used
+#preblupfilename=EBlupOnePre
+blupdirfilename=EBlupOneDMUai.DIR
+#postblupfilename=EBlupOnePost
+
+#####################
+# echo 'Pre-BLUP steps: Modify data input files'
+ 
+# R CMD BATCH --vanilla $preblupfilename.R
+# mv -f $preblupfilename.Rout $SLURM_SUBMIT_DIR
+ 
+# echo Processing data input files completed
+
+##################### DMU folder
+dmupath=/opt/ghpc/dmu/dmuv6/R5.6-EM64T/bin
+
+#####################
+ echo 'This lst file contains all lst files for all DMUruns' > dmu.lst
+ echo 'Run 1:' >> dmu.lst
+ echo ' ' >> dmu.lst
+
+ echo Running dmu1
+ $dmupath/dmu1 < $blupdirfilename >> dmu.lst
+  echo Running dmuai
+ $dmupath/dmuai >> dmu.lst
+
+if [ -e MODINF ]
+then
+    echo "DMU run completed" >> dmu.lst
+else
+    echo "DMU run not successfully" >> dmu.lst
+fi
+ echo >> dmu.lst
+# rm RCDATA_R RCDATA_I MODINF
+
+#####################
+# echo 'Post-BLUP processing: Modify format of SOL output for ADAM.'
+ 
+# R CMD BATCH --vanilla $postblupfilename.R
+# mv -f $postblupfilename.Rout $SLURM_SUBMIT_DIR
+ 
+# echo Post-BLUP processing completed.
+
+######################
