@@ -1,0 +1,139 @@
+! Simulation of a breeding program for potato
+&OUTPUTDIRECTORY
+ OutDirectory='~/ADAMMulti/example1/'
+/
+ 
+&CONTROLPARAMETERS
+ GeneticModel=genomic
+ nrep=30
+ ntime=15
+ start_rep=1 
+ SimulateDominance=1
+ SimulatePairEpistasis=1 1 1 
+ bisexualspecies='yes'
+ nTotal=99999          ! a rough estimate of max total number of indivdiuals in pops. (unnecessary but for memory efficient purposes)
+/
+ 
+&CONTROL_GENOME
+ nchrom=12
+ ChromLengths=89  74.7  76.5  81.8  57.5  64.7  65.1  75.5  84.6  70.2  71.6  77.4
+ nAlleleInLocus=4
+ ploidy=4
+ templateDensity=2.0
+/
+
+&LD
+ qtlDistribution='normal'
+ UseStoredHaplotypes=yes
+ UseStoredHaplotypesDirectory='~/ADAMMulti/example1/geno1pop/'
+ npopbaseHaplotype=1
+/
+
+&RANDOMNUMBERSEEDS
+ randomSeeds=manual
+ founderSeeds=user
+ founderSeed1= 623119
+ founderSeed2= 656479
+ baseSeeds=computer
+ selectionSeeds=computer    /
+
+&POPULATIONPARAMETERS
+ npop=1
+ nherd=2
+ ntbv=2
+ nres=2
+ nobs=2
+ OldAgeMales=2
+ OldAgeFemales=2
+/
+ 
+&BASEPOPULATION
+ age_class_base=input   ! create_structure   ! 
+ max_age_base_males=1
+ max_age_base_females=1
+ age_class_male= 50 50
+ age_class_female= 50 50 /
+ 
+&SELECTION
+ selection_groups=5
+ selection_scheme=
+!t1 t2 se li p1p2 a1a2 h1he2 ide1ide2 pari1pari2 selecMet selecCrit   Mende rBlup no relSt tagN tag dest mgro tp th desU rep_c lsA  ls sA       sr ger srul famrul
+ 1 15   0  1 1 1   1 1  1  2 -9  -9  -9   -9  'select_all' ''            0.5   0    0   0     0   0    8    0   0   0  0    0  ""     0  ''      0.0 0   0    0   ! 1 Realize phenotypes for trait 1 and 2
+
+ 1  5   0  1 1 1   1 1  1  2 -9  -9  -9   -9  'truncation' 'random'      0.5   0   40   3     0   0    1    1   0   0  1    3 "fix"   2  ''      0.0 0   0    0   ! 2 Burn-in steps. Not needed in this study, but keep here for reminder
+ 1  5   0  1 1 1   1 1  1  2 -9  -9  -9   -9  'truncation' 'random'      0.5   0   80   0     0   0    1    2   0   0  0    3 "fix"   2  ''      0.0 0   0    0   ! 3 Burn-in steps. Not needed in this study, but keep here for reminder
+
+ 6 15   0  1 1 1   1 1  1  2 -9  -9  -9   -9  'truncation' 'phenoweight' 0.5   0   40   5     0   0    1    1   0   0  1    3 "fix"   2  ''      0.0 0   0    0   ! 4 Select indivdiuals from herd 1 & 2 based on breeding goal 1 for mating/crossing. The one selected here will not be used for other market (not reselected)
+ 6 15   0  1 1 1   1 1  1  2 -9  -9  -9   -9  'truncation' 'phenoweight' 0.5   0   80   0     0   0    1    2   0   0  0    3 "fix"   2  ''      0.0 0   0    0   ! 5 Select indivdiuals from herd 1 & 2 based on breeding goal 2 for mating/crossing. 
+
+/
+
+&MATINGPARAMETERS
+ mating_scheme= 1 'pseudorandom_crossing' 1 1 0 'defaults' 'random'  50 0 1 0 0
+                2 'pseudorandom_crossing' 1 2 0 'defaults' 'random'  50 0 1 0 0
+/
+
+&PHENOWEIGHTS
+  nPhenotypicWeights=2
+                     !stage  sex  obs  weight 
+  phenotypicWeights=    4     0    1    1.0
+                        5     0    2    1.0
+/
+ 
+&MATRICES
+  polygenicMatrix=
+    0.00001 0.0
+	0.0 0.00001
+  genomicMatrix=
+    1.0 -0.1
+	-0.1 1.0
+  dominanceMatrix=
+    0.25 0.0
+	0.0  0.25
+  EpistasisAxAMatrix=
+    0.25 0.0
+	0.0  0.25
+  EpistasisAxDMatrix=
+    0.25 0.0
+	0.0  0.25
+  EpistasisDxDMatrix=
+    0.25 0.0
+	0.0  0.25
+  residualMatrix=
+    8.0 0.0
+	0.0 8.0 
+/
+
+&DESIGN_MATRICES
+ ZDirectGenetic=
+  1 0
+  0 1
+ WDirectError=
+  1 0
+  0 1
+/
+
+&ECONOMICVALUES
+ economicValueTbV=1.0 1.0
+/
+
+&OBSERVATIONS
+ nMaleObs=2
+ nFemaleObs=2
+ MaleObservations=
+  1 1  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+  2 1  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+ FemaleObservations=
+  1 1  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+  2 1  -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9 -9
+/
+ 
+&REPORT
+ nReportGroups=3
+ reportGroupPopHerd=1 1 1 1 -9 -9
+                    1 1 2 2 -9 -9
+					1 1 1 2 -9 -9
+! printSimulatedData=1 0 0
+ debugOutput='no' !  'yes'  ! 
+! printBreedingValues='yes'
+/
