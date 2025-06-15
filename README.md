@@ -32,5 +32,6 @@ Use example 1 to test the program if installed correctly.
 Example 2, and 3 call other program to calculate genomic relationship matrices & estimate breeding values.
 
 
-This program is free and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to use and redistribute it.
+This program is free and comes with ABSOLUTELY NO WARRANTY. The manual is not in good format. But it has
+all updated functions for the input file. 
+I dont have much time to detail every steps. If you can manage to install & use this program, please contribute to the guidelines, and share with other people. 
